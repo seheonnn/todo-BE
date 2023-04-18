@@ -8,7 +8,6 @@ build/
 # Ignore application.yml file
 *.yml
 
-
 ### STS ###
 .apt_generated
 .classpath
