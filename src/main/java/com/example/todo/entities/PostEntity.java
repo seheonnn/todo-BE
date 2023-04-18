@@ -4,7 +4,7 @@ import com.example.todo.dto.PostDTO;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.time.LocalDateTime;
 
