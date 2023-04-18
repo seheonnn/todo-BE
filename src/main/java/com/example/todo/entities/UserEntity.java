@@ -1,8 +1,9 @@
 package com.example.todo.entities;
 import com.example.todo.dto.UserDTO;
-import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+
+import javax.persistence.*;
 
 import java.time.LocalDateTime;
 

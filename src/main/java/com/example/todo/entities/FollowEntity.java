@@ -3,8 +3,7 @@ package com.example.todo.entities;
 import com.example.todo.dto.FollowDTO;
 import lombok.*;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 
 @Entity(name = "Follow")
 @Table(name = "Follow")
