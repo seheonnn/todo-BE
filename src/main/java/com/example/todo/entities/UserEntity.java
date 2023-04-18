@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 
 @Entity(name = "User")
 @Table(name = "User")
-@SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
+//@SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)// , generator = "user_sequence"
     private Long userIdx;
 
     @Column(name = "username", nullable = false)

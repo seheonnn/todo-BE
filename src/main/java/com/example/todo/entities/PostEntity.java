@@ -5,18 +5,19 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity(name = "Post")
 @Table(name = "Post")
-@SequenceGenerator(name = "post_sequence", sequenceName = "post_sequence", allocationSize = 1)
+//@SequenceGenerator(name = "post_sequence", sequenceName = "post_sequence", allocationSize = 1)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class PostEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "post_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postIdx;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -40,6 +41,7 @@ public class PostEntity {
     private LocalDateTime endDate;
 
     @Column(name = "completed", nullable = false)
+    @ColumnDefault("false")
     private boolean completed;
 
 

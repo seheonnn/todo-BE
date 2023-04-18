@@ -8,13 +8,13 @@ import jakarta.persistence.*;
 
 @Entity(name = "Follow")
 @Table(name = "Follow")
-@SequenceGenerator(name = "follow_sequence", sequenceName = "follow_sequence", allocationSize = 1)
+//@SequenceGenerator(name = "follow_sequence", sequenceName = "follow_sequence", allocationSize = 1)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class FollowEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "follow_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long followIdx;
 
     @ManyToOne
