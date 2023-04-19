@@ -36,4 +36,13 @@ public class LoginService {
                 .build();
         return userRepository.saveAndFlush(newUser);
     }
+
+    public UserEntity checkUserInfo(UserDTO user) throws Exception {
+        UserEntity userEntity = userRepository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+        if (!encoder.matches(user.getPassword(), userEntity.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+        return userEntity;
+    }
 }

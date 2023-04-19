@@ -1,7 +1,9 @@
 package com.example.todo.controller;
 
 import com.example.todo.config.ErrorResponse;
+import com.example.todo.config.security.JwtTokenProvider;
 import com.example.todo.dto.UserDTO;
+import com.example.todo.entities.UserEntity;
 import com.example.todo.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +23,9 @@ public class LoginController {
 
     @Autowired
     LoginService loginService;
+
+    private final JwtTokenProvider jwtTokenProvider;
+
     @PostMapping("/join")
     public ResponseEntity<ErrorResponse> join (@RequestBody UserDTO user) {
         try {
@@ -28,8 +33,20 @@ public class LoginController {
             return ResponseEntity.ok().build();
 
         } catch (Exception exception) {
-            new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
             return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()));
         }
     }
+
+    @PostMapping("/login")
+    public String login (@RequestBody UserDTO user) {
+        try {
+            UserEntity userEntity = loginService.checkUserInfo(user);
+            return jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
+
+        } catch (Exception exception) {
+            return String.valueOf(ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage())));
+        }
+    }
+
+
 }
