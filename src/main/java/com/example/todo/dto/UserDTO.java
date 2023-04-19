@@ -3,9 +3,10 @@ package com.example.todo.dto;
 import com.example.todo.entities.UserEntity;
 import lombok.*;
 
+import javax.persistence.Column;
 import java.time.LocalDateTime;
 
-//@Data
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 //@ToString
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class UserDTO {
     private Long userIdx;
 
-    private String username;
+    private String email;
 
     private String password;
 
@@ -22,6 +23,8 @@ public class UserDTO {
     private String profileImage;
 
     private char status;
+
+    private String role;
 
     private LocalDateTime created_at;
 
@@ -33,11 +36,12 @@ public class UserDTO {
 
     public UserEntity toEntity() {
         return UserEntity.builder()
-                .username(username)
+                .email(email)
                 .password(password)
                 .name(name)
                 .profileImage(profileImage)
                 .status(status)
+                .role(role)
                 .created_at(created_at)
                 .updated_at(updated_at)
                 .login_at(login_at)

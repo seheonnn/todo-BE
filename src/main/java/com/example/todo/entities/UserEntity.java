@@ -14,14 +14,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)// , generator = "user_sequence"
     private Long userIdx;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -29,12 +30,15 @@ public class UserEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "profileImage", nullable = false)
+    @Column(name = "profileImage", nullable = true)
     private String profileImage;
 
     @Column(name = "status", nullable = false)
     @ColumnDefault("'A'") // A: 활성 유저 D: 탈퇴 유저
     private char status;
+
+    @Column(name = "role", nullable = false) // User, Guest
+    private String role;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime created_at;
@@ -56,11 +60,12 @@ public class UserEntity {
 
     public UserDTO toDTO() {
         return UserDTO.builder()
-                .username(username)
+                .email(email)
                 .password(password)
                 .name(name)
                 .profileImage(profileImage)
                 .status(status)
+                .role(role)
                 .created_at(created_at)
                 .updated_at(updated_at)
                 .login_at(login_at)
