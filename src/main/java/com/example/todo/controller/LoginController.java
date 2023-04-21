@@ -39,6 +39,4 @@ public class LoginController {
         UserEntity userEntity = loginService.checkUserInfo(user);
         return jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
     }
-
-
 }

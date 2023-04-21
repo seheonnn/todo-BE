@@ -1,14 +1,11 @@
 package com.example.todo.service;
 
-import com.example.todo.config.RoleType;
 import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Optional;
 
 @Service
@@ -41,4 +38,12 @@ public class UserService {
 
     }
 
+    public Optional<UserEntity> deactivateUser(UserDTO user) {
+        UserEntity userEntity = userRepository.findById(user.getUserIdx()).orElse(null);
+        if (userEntity == null) {
+            return Optional.empty();
+        }
+        userEntity.setStatus('D');
+        return Optional.of(userRepository.saveAndFlush(userEntity));
+    }
 }

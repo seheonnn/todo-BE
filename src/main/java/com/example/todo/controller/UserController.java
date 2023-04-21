@@ -2,6 +2,7 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
+import com.example.todo.service.LoginService;
 import com.example.todo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +20,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    LoginService loginService;
+
     // 내 정보 조회
     @GetMapping("")
     public ResponseEntity<Optional<UserEntity>> getMyInfo(@RequestBody UserDTO user) {
@@ -28,7 +32,24 @@ public class UserController {
 
     // 내 정보 수정
     @PostMapping("")
-    public ResponseEntity<Optional<UserEntity>> updateMyInfo(@RequestBody UserDTO user) {
-        return ResponseEntity.ok(userService.updateMyInfo(user));
+    public ResponseEntity<Void> updateMyInfo(@RequestBody UserDTO user) {
+        userService.updateMyInfo(user);
+        return ResponseEntity.ok(null);
     }
+
+    // 비밀번호 변경
+    @PostMapping("/changepw")
+    public ResponseEntity<Void> updatePW(@RequestBody UserDTO user, @RequestParam String originalPw, @RequestParam String newPw, @RequestParam String newPwCheck) throws Exception {
+        if (loginService.validatePw(user, originalPw))
+            loginService.changePw(user, newPw, newPwCheck);
+        return ResponseEntity.ok(null);
+    }
+
+    // 회원 탈퇴
+    @PostMapping("/delete")
+    public ResponseEntity<Optional<UserEntity>> deactivateUser(@RequestBody UserDTO user) {
+        userService.deactivateUser(user);
+        return ResponseEntity.ok(null);
+    }
+
 }
