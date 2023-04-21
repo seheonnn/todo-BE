@@ -26,26 +26,18 @@ public class LoginController {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    // 회원가입
     @PostMapping("/join")
-    public ResponseEntity<ErrorResponse> join (@RequestBody UserDTO user) {
-        try {
-            loginService.join(user);
-            return ResponseEntity.ok().build();
-
-        } catch (Exception exception) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()));
-        }
+    public ResponseEntity<Void> join(@RequestBody UserDTO user) throws Exception {
+        loginService.join(user);
+        return ResponseEntity.ok(null);
     }
 
+    // 로그인
     @PostMapping("/login")
-    public String login (@RequestBody UserDTO user) {
-        try {
-            UserEntity userEntity = loginService.checkUserInfo(user);
-            return jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
-
-        } catch (Exception exception) {
-            return String.valueOf(ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage())));
-        }
+    public String login(@RequestBody UserDTO user) throws Exception {
+        UserEntity userEntity = loginService.checkUserInfo(user);
+        return jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
     }
 
 

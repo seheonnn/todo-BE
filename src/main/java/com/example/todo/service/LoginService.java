@@ -32,6 +32,7 @@ public class LoginService {
                 .profileImage(userEntity.getProfileImage())
                 .status('A')
                 .role(String.valueOf(RoleType.USER))
+                .login_cnt(0L)
                 .created_at(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
         return userRepository.saveAndFlush(newUser);
@@ -43,6 +44,8 @@ public class LoginService {
         if (!encoder.matches(user.getPassword(), userEntity.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return userEntity;
+        userEntity.setLogin_at(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+        userEntity.setLogin_cnt(userEntity.getLogin_cnt()+1);
+        return userRepository.saveAndFlush(userEntity);
     }
 }
