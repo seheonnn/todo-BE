@@ -4,21 +4,21 @@ import com.example.todo.entities.FollowEntity;
 import com.example.todo.entities.UserEntity;
 import lombok.*;
 
-//@Data
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class FollowDTO {
     private Long followIdx;
 
-    private UserEntity toUser;
-
     private UserEntity fromUser;
+
+    private UserEntity toUser;
 
     public FollowEntity toEntity() {
         return FollowEntity.builder()
-                .toUser(toUser)
                 .fromUser(fromUser)
+                .toUser(toUser)
                 .build();
     }
 }

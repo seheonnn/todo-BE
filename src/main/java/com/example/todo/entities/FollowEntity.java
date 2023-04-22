@@ -17,17 +17,22 @@ public class FollowEntity {
     private Long followIdx;
 
     @ManyToOne
-    @JoinColumn(name = "to_user") // 다른 사용자에 의해 팔로우 받는 user
-    private UserEntity toUser;
-
-    @ManyToOne
     @JoinColumn(name = "from_user") // 팔로우 요청하는 user
     private UserEntity fromUser;
 
+    @ManyToOne
+    @JoinColumn(name = "to_user") // 다른 사용자에 의해 팔로우 받는 user
+    private UserEntity toUser;
+
+    public FollowEntity(UserEntity fromUser, UserEntity toUser) {
+        this.fromUser = fromUser;
+        this.toUser = toUser;
+    }
+
     public FollowDTO toDTO() {
         return FollowDTO.builder()
-                .toUser(toUser)
                 .fromUser(fromUser)
+                .toUser(toUser)
                 .build();
     }
 }
