@@ -11,12 +11,12 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
 //    List<PostEntity> findByUser(UserEntity user);
 
-    @Query("select p from post p where p.user_seq=:userId")
+    @Query("select p from Post p where p.user.userIdx=:userId")
     List<PostEntity> findAllByUserId(@Param("userId") Long userId);
 
-    @Query("select p from post p where p.shared=true")
+    @Query("select p from Post p where p.shared=true")
     List<PostEntity> findSharedPosts();
 
-    @Query("select p.like_cnt from post p where p.postIdx=:postId")
+    @Query("select p.likeCnt from Post p where p.postIdx=:postId")
     int getLikeCnt(@Param("postId") Long postId);
 }
