@@ -29,7 +29,7 @@ public class PostDTO {
 
     private boolean completed;
 
-    private Long like_cnt;
+    private Long likeCnt;
 
     public PostEntity toEntity() {
         return PostEntity.builder()
@@ -40,7 +40,7 @@ public class PostDTO {
                 .startDate(startDate)
                 .endDate(endDate)
                 .completed(completed)
-                .like_cnt(like_cnt)
+                .likeCnt(likeCnt)
                 .build();
     }
 }

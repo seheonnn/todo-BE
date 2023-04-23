@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 public class PostEntity {
 
     @Id
@@ -23,7 +24,6 @@ public class PostEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userIdx", referencedColumnName = "userIdx")
     private UserEntity user;
-
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -47,7 +47,7 @@ public class PostEntity {
 
     @Column(name = "like_cnt", nullable = false)
     @ColumnDefault("0")
-    private Long like_cnt;
+    private Long likeCnt;
 
     public PostDTO toDTO() {
         return PostDTO.builder()
@@ -58,7 +58,7 @@ public class PostEntity {
                 .startDate(startDate)
                 .endDate(endDate)
                 .completed(completed)
-                .like_cnt(like_cnt)
+                .likeCnt(likeCnt)
                 .build();
     }
 }
