@@ -33,4 +33,10 @@ public class FollowController {
     public ResponseEntity<List<SimpleAccountInfo>> getFollowers(@RequestBody UserDTO user) throws Exception {
         return ResponseEntity.ok(followService.getFollower(user));
     }
+
+    // 팔로잉 조회
+    @GetMapping("/followings")
+    public ResponseEntity<List<SimpleAccountInfo>> getFolloings(@RequestBody UserDTO user) throws Exception {
+        return ResponseEntity.ok(followService.getFollowings(user));
+    }
 }

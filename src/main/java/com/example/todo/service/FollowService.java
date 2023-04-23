@@ -61,4 +61,17 @@ public class FollowService {
         return userInfos;
     }
 
+    public List<SimpleAccountInfo> getFollowings(UserDTO user) throws Exception {
+        UserEntity userEntity = userRepository.findById(user.getUserIdx())
+                .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
+
+        List<UserEntity> followings = followRepository.findAllByFromUser(userEntity.getUserIdx());
+        log.info(followings.toString());
+        List<SimpleAccountInfo> userInfos = new ArrayList<>();
+        for(UserEntity u: followings) {
+            userInfos.add(new SimpleAccountInfo(u.getUserIdx(), u.getEmail(), u.getName(), u.getProfileImage()));
+        }
+        return userInfos;
+    }
+
 }

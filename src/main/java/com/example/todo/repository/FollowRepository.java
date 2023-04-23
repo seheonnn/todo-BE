@@ -14,8 +14,12 @@ public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
 
     Optional<FollowEntity> findByFromUserAndToUser(UserEntity fromUserIdx, UserEntity toUSerIdx);
 
-    // follower 찾기
+    // follower 조회
     @Query(value = "SELECT u FROM Follow f JOIN f.fromUser u WHERE f.toUser.userIdx = :userIdx")
     List<UserEntity> findAllByToUser(@Param("userIdx") Long userIdx);
+
+    // following 조회
+    @Query(value = "SELECT u FROM Follow f JOIN f.toUser u WHERE f.fromUser.userIdx = :userIdx")
+    List<UserEntity> findAllByFromUser(@Param("userIdx") Long userIdx);
 
 }
