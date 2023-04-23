@@ -2,10 +2,13 @@ package com.example.todo.entities;
 import com.example.todo.dto.UserDTO;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 
 @Entity(name = "User")
@@ -15,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Data
-public class UserEntity {
+public class UserEntity implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)// , generator = "user_sequence"
@@ -49,7 +52,7 @@ public class UserEntity {
     @Column(name = "login_at", nullable = true)
     private LocalDateTime login_at;
 
-    @Column(name = "login_cnt", nullable = true)
+    @Column(name = "login_cnt", nullable = false)
     @ColumnDefault("0")
     private Long login_cnt;
 
@@ -73,4 +76,34 @@ public class UserEntity {
                 .build();
     }
 
+    // UserDetails 상속
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
