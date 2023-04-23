@@ -1,6 +1,8 @@
 package com.example.todo.service;
 
 import com.example.todo.dto.FollowDTO;
+import com.example.todo.dto.SimpleAccountInfo;
+import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.FollowEntity;
 import com.example.todo.entities.UserEntity;
 import com.example.todo.repository.FollowRepository;
@@ -9,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,6 +46,19 @@ public class FollowService {
             followRepository.saveAndFlush(new FollowEntity(fromUser, toUser));
             return ResponseEntity.ok("팔로우 성공");
         }
+    }
+
+    public List<SimpleAccountInfo> getFollower(UserDTO user) throws Exception {
+        UserEntity userEntity = userRepository.findById(user.getUserIdx())
+                .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
+
+        List<UserEntity> followers = followRepository.findAllByToUser(userEntity.getUserIdx());
+        log.info(followers.toString());
+        List<SimpleAccountInfo> userInfos = new ArrayList<>();
+        for(UserEntity u: followers) {
+            userInfos.add(new SimpleAccountInfo(u.getUserIdx(), u.getEmail(), u.getName(), u.getProfileImage()));
+        }
+        return userInfos;
     }
 
 }
