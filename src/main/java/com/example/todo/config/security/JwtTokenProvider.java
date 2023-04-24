@@ -1,5 +1,6 @@
 package com.example.todo.config.security;
 
+import com.example.todo.dto.TokenDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -41,16 +42,19 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성
-    public String createToken(String email, String roles) {
+    public TokenDTO createToken(String email, String roles) {
         Claims claims = Jwts.claims().setSubject(email); // JWT payload 에 저장되는 정보단위
         claims.put("roles", roles); // 정보는 key : value 쌍으로 저장된다.
         Date now = new Date();
-        return Jwts.builder()
+        Date expiresTime = new Date(now.getTime() + tokenValidTime);
+//        log.info("발급 secret key: " + secretKey);
+        String token = Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // Expire Time 설정
+                .setExpiration(expiresTime) // Expire Time 설정
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature 에 들어갈 secretkey 값 설정
                 .compact();
+        return new TokenDTO(token, expiresTime);
     }
 
     // JWT 토큰에서 인증 정보 조회
@@ -75,8 +79,14 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception exception) {
-//            log.info(exception);
+//            log.info("검증 secret key: " + secretKey);
             return false;
         }
+    }
+
+    // 토큰 만료 시간 확인
+    public Date getExpireTime(String jwtToken) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+        return claims.getBody().getExpiration();
     }
 }
