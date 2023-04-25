@@ -1,11 +1,14 @@
 package com.example.todo.entities;
 
 import com.example.todo.dto.PostDTO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity(name = "Post")
@@ -35,9 +38,11 @@ public class PostEntity {
     private boolean shared;
 
     @Column(name = "startDate", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
 
     @Column(name = "endDate", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDate;
 
     @Column(name = "completed", nullable = false)

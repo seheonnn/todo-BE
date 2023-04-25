@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -16,9 +17,8 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public void findAllByUserId(Long userId) {
-        // id가 존재하는 아이디인지 확인
-        postRepository.findAllByUserId(userId);
+    public List<PostEntity> findAllByUserId(Long userId) {
+        return postRepository.findAllByUserId(userId);
     }
 
     @Transactional
@@ -29,7 +29,7 @@ public class PostService {
                 .postIdx(postEntity.getPostIdx())
                 .description(postEntity.getDescription())
                 .shared(false)
-                .endDate(null)
+                .endDate(postEntity.getEndDate())
                 .likeCnt(0L)
                 .startDate(LocalDateTime.now())
                 .title(postEntity.getTitle())
@@ -38,16 +38,27 @@ public class PostService {
         postRepository.save(newPost);
     }
 
+    public void update(PostDTO post) {
+        // 수정 항목 : description, shared, likeCnt, title, completed
+        PostEntity postEntity = post.toEntity();
+        PostEntity findPost = postRepository.findById(postEntity.getPostIdx()).get();
+        findPost.setDescription(postEntity.getDescription());
+        findPost.setShared(postEntity.isShared());
+        findPost.setLikeCnt(postEntity.getLikeCnt());
+        findPost.setCompleted(postEntity.isCompleted());
+        postRepository.save(findPost);
+    }
+
     @Transactional
     public void delete(Long postId) {
         postRepository.deleteById(postId);
     }
 
-    public void findSharedPosts() {
-        postRepository.findSharedPosts();
+    public List<PostEntity> findSharedPosts() {
+        return postRepository.findSharedPosts();
     }
 
-    public void getLikeCnt(Long postId) {
-        postRepository.getLikeCnt(postId);
+    public int getLikeCnt(Long postId) {
+        return postRepository.getLikeCnt(postId);
     }
 }

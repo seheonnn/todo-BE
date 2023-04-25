@@ -2,11 +2,13 @@ package com.example.todo.controller;
 
 import com.example.todo.config.ErrorResponse;
 import com.example.todo.dto.PostDTO;
+import com.example.todo.entities.PostEntity;
 import com.example.todo.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,70 +19,41 @@ public class PostController {
 
     // 내 게시글 모두 조회
     @GetMapping(path = "/{userId}")
-    public ResponseEntity<ErrorResponse> posts(@PathVariable Long userId) {
-        try {
-            // userId로 조회
-            postService.findAllByUserId(userId);
-            return ResponseEntity.ok().build();
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        }
+    public List<PostEntity> posts(@PathVariable Long userId) {
+        return postService.findAllByUserId(userId);
     }
 
     // 게시글 생성
     @PostMapping(path = "/write")
     public ResponseEntity<ErrorResponse> write(@RequestBody PostDTO post) {
-        try {
-            postService.save(post);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        }
+        postService.save(post);
+        return ResponseEntity.ok().build();
     }
 
     // 게시글 수정
     @PostMapping(path = "/update")
     public ResponseEntity<ErrorResponse> update(@RequestBody PostDTO post) {
-        try {
-            postService.save(post);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        }
+        postService.update(post);
+        return ResponseEntity.ok().build();
     }
 
     // 게시글 삭제
     @PostMapping(path = "/delete")
     public ResponseEntity<ErrorResponse> delete(@RequestBody PostDTO post) {
-        try {
-            postService.delete(post.toEntity().getPostIdx());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        }
+        postService.delete(post.toEntity().getPostIdx());
+        return ResponseEntity.ok().build();
     }
 
     // 공유된 게시글 조회
-    @PostMapping(path = "/posts/shared")
-    public ResponseEntity<ErrorResponse> getSharedPosts() {
-        try {
-            postService.findSharedPosts();
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        }
+    @PostMapping(path = "/shared")
+    public List<PostEntity> getSharedPosts() {
+        return postService.findSharedPosts();
     }
 
     // 좋아요 조회
-    @GetMapping(path = "/posts/like/{postId}")
-    public ResponseEntity<ErrorResponse> getLikeCnt(@PathVariable Long postId) {
-        try {
-            postService.getLikeCnt(postId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        }
+    @GetMapping(path = "/like/{postId}")
+    public int getLikeCnt(@PathVariable Long postId) {
+        return postService.getLikeCnt(postId);
     }
 
 
