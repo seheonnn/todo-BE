@@ -13,14 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -32,6 +35,9 @@ public class LoginService {
     private UserRepository userRepository;
     @Autowired
     private CustomUserDetailService customUserDetailService;
+
+    @Autowired
+    JavaMailSender mailSender;
     private String secretKey;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
@@ -48,7 +54,7 @@ public class LoginService {
 
     public UserEntity getCurrentUser(HttpServletRequest request) throws Exception {
         // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = request.getHeader("X-AUTH-TOKEN");
+        String jwtToken = jwtTokenProvider.resolveToken(request);
         if (!jwtTokenProvider.validateToken(jwtToken)) {
             throw new Exception("유효하지 않은 토큰입니다.");
         }
@@ -107,6 +113,9 @@ public class LoginService {
             // token 으로 user 정보 받음
             UserEntity user = getCurrentUser(request);
 
+            user.setLogin_cnt(0L);
+            userRepository.saveAndFlush(user);
+
             // Redis 에서 해당 User email 로 저장된 token 이 있는지 확인 후 있는 경우 삭제
             Object token = redisTemplate.opsForValue().get("RT:" + user.getEmail());
             if (token != null) {
@@ -125,9 +134,6 @@ public class LoginService {
 
     public boolean validatePw(UserDTO user, String originalPw) throws Exception {
         UserEntity userEntity = userRepository.findById(user.getUserIdx()).orElse(null);
-//        log.info(userEntity.getPassword());
-//        log.info(originalPw);
-//        log.info(String.valueOf(encoder.matches(userEntity.getPassword(), originalPw)));
         if (encoder.matches(originalPw, userEntity.getPassword()))
             return true;
         else throw new Exception("비밀번호 불일치");
@@ -141,5 +147,44 @@ public class LoginService {
             return Optional.of(userRepository.saveAndFlush(userEntity));
         }
         else throw new Exception("비밀번호 재확인");
+    }
+
+    public String findPw(UserDTO user) throws Exception {
+        // 이메일 확인
+        UserEntity userEntity = userRepository.findByEmail(user.getEmail())
+                .orElseThrow(() -> new Exception("가입되지 않은 이메일입니다."));
+        // 이름 확인
+        if (!userEntity.getName().equals(user.getName())) {
+            throw new Exception("일치하는 사용자 정보가 없습니다.");
+        }
+        Random r = new Random();
+        int num = r.nextInt(999999); // 랜덤 난수 설정
+
+        String setFrom = "ho78901@naver.com"; // 보내는 사람
+        String toMail = userEntity.getEmail(); // 받는 사람
+        String title = "[Todo] 비밀번호 변경 인증 메일입니다";
+        String content = System.getProperty("line.separator") + "안녕하세요." + System.getProperty("line.separator")
+                + "비밀번호 찾기 인증번호는 " + num + " 입니다." + System.getProperty("line.separator");
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "utf-8");
+
+            messageHelper.setFrom(setFrom);
+            messageHelper.setTo(toMail);
+            messageHelper.setSubject(title);
+            messageHelper.setText(content);
+
+            mailSender.send(message);
+        } catch (Exception exception) {
+            throw new Exception(exception.getMessage());
+        }
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("findPw");
+        mv.addObject("num", num);
+
+        log.info(String.valueOf(mv.getModel().get("num")));
+
+        return mv.getModel().get("num").toString();
     }
 }

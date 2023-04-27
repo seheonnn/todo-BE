@@ -25,11 +25,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
+    @Value("${jwt.secret}")
     private String secretKey;
-    @Autowired
-    public void JwtProvider(@Value("${jwt.secret}") String secretKey) {
-        this.secretKey = secretKey;
-    }
 
     // 토큰 유효시간 30분
     private long tokenValidTime = 30 * 60 * 1000L;

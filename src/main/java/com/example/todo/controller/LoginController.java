@@ -34,8 +34,14 @@ public class LoginController {
     }
 
     // 로그아웃
-    @GetMapping("/log-out")
+    @PostMapping("/log-out")
     public ResponseEntity<String> logout(HttpServletRequest request) throws Exception {
         return ResponseEntity.ok(loginService.logout(request));
+    }
+
+    //비밀번호 찾기
+    @PostMapping("/findpw")
+    public ResponseEntity<String> findPw(@RequestBody UserDTO user) throws Exception {
+        return ResponseEntity.ok(loginService.findPw(user));
     }
 }

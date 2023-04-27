@@ -41,6 +41,9 @@ dependencies {
 	// Redis -> 로그아웃을 요청한 사용자의 토큰을 저장하고 토큰의 만료 시간을 지정하여 사용자가 로그아웃한 시점부터 일정 시간 동안 해당 토큰이 유효하지 않도록 함.
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// email 관련
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 //	implementation 'org.hibernate:hibernate-entitymanager:5.2.3.Final'
 //	implementation 'org.hibernate:hibernate-core:5.2.1.Final'
 }
