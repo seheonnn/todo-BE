@@ -3,6 +3,7 @@ package com.example.todo.service;
 import com.example.todo.config.RoleType;
 import com.example.todo.config.security.CustomUserDetailService;
 import com.example.todo.config.security.JwtTokenProvider;
+import com.example.todo.dto.ChangePwInfo;
 import com.example.todo.dto.TokenDTO;
 import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
@@ -132,17 +133,17 @@ public class LoginService {
         }
     }
 
-    public boolean validatePw(UserDTO user, String originalPw) throws Exception {
-        UserEntity userEntity = userRepository.findById(user.getUserIdx()).orElse(null);
-        if (encoder.matches(originalPw, userEntity.getPassword()))
+    public boolean validatePw(ChangePwInfo changePwInfo) throws Exception {
+        UserEntity userEntity = userRepository.findById(changePwInfo.getUserIdx()).orElse(null);
+        if (encoder.matches(changePwInfo.getOriginalPw(), userEntity.getPassword()))
             return true;
         else throw new Exception("비밀번호 불일치");
     }
 
-    public Optional<UserEntity> changePw(UserDTO user, String newPw, String newPwCheck) throws Exception {
-        UserEntity userEntity = userRepository.findById(user.getUserIdx()).orElse(null);
-        String encryptedPw = encoder.encode(newPw);
-        if (newPw.equals(newPwCheck)) {
+    public Optional<UserEntity> changePw(ChangePwInfo changePwInfo) throws Exception {
+        UserEntity userEntity = userRepository.findById(changePwInfo.getUserIdx()).orElse(null);
+        String encryptedPw = encoder.encode(changePwInfo.getNewPw());
+        if (changePwInfo.getNewPw().equals(changePwInfo.getNewPwCheck())) {
             userEntity.setPassword(encryptedPw);
             return Optional.of(userRepository.saveAndFlush(userEntity));
         }
