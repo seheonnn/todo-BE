@@ -2,6 +2,7 @@ package com.example.todo.entities;
 import com.example.todo.dto.UserDTO;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -44,6 +45,7 @@ public class UserEntity implements UserDetails{
     private String role;
 
     @Column(name = "created_at", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime created_at;
 
     @Column(name = "updated_at", nullable = true)

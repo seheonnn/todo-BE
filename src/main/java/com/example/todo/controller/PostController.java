@@ -6,6 +6,8 @@ import com.example.todo.entities.PostEntity;
 import com.example.todo.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class PostController {
     }
 
     // 게시글 생성
-    @PostMapping(path = "/write")
+    @PostMapping(path = "/create")
     public ResponseEntity<ErrorResponse> write(@RequestBody PostDTO post) {
         postService.save(post);
         return ResponseEntity.ok().build();
@@ -56,5 +58,12 @@ public class PostController {
         return postService.getLikeCnt(postId);
     }
 
-
+    // 좋아요 / 취소
+    @PostMapping("/add/like/{userId}")
+    public ResponseEntity<Void> addLike(
+            @AuthenticationPrincipal Authentication authentication,
+            @RequestBody PostDTO post) throws Exception {
+        postService.addLike(authentication, post);
+        return ResponseEntity.ok(null);
+    }
 }
