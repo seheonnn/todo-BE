@@ -1,5 +1,6 @@
 package com.example.todo.config.security;
 
+import com.example.todo.config.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,9 +39,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // totken 기반 인증이므로 session 사용 X
                 .and()
                 .authorizeRequests() // 요청에 대한 사용 권한 체크
-//                .antMatchers("/users/**").hasRole("USER")
-//                .antMatchers("/posts/**").hasRole("USER")
-//                .antMatchers("/follow/**").hasRole("USER")
+                .antMatchers("/users/**").hasRole("USER")
+                .antMatchers("/posts/**").hasRole("USER")
+                .antMatchers("/follow/**").hasRole("USER")
                 .antMatchers("/**").permitAll() // 그 외 나머지 요청은 누구나 접근 가능
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);

@@ -23,9 +23,8 @@ public class FollowController {
 
     // 팔로우 & 언팔로우
     @PostMapping("")
-    public ResponseEntity<Void> addFollow(@RequestBody FollowDTO follow) throws Exception {
-        followService.followToggle(follow);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<String> addFollow(@RequestBody FollowDTO follow) throws Exception {
+        return ResponseEntity.ok(followService.followToggle(follow));
     }
 
     // 팔로워 조회

@@ -27,7 +27,7 @@ public class FollowService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<String> followToggle(FollowDTO follow) throws Exception {
+    public String followToggle(FollowDTO follow) throws Exception {
         if (follow.getFromUser().equals(follow.getToUser()))
             throw new Exception("같은 유저는 팔로우할 수 없습니다.");
         UserEntity fromUser = userRepository.findById(follow.getFromUser().getUserIdx())
@@ -40,11 +40,11 @@ public class FollowService {
 
         if (followRelation.isPresent()) {
             followRepository.delete(followRelation.get());
-            return ResponseEntity.ok("언팔로우 성공");
+            return "언팔로우 성공";
         }
         else {
             followRepository.saveAndFlush(new FollowEntity(fromUser, toUser));
-            return ResponseEntity.ok("팔로우 성공");
+            return "팔로우 성공";
         }
     }
 

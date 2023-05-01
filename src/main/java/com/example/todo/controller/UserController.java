@@ -29,7 +29,6 @@ public class UserController {
     @GetMapping("")
     public ResponseEntity<Optional<UserEntity>> getMyInfo(@RequestBody UserDTO user) {
         return ResponseEntity.ok(userService.getMyInfo(user.getUserIdx()));
-
     }
 
     // 내 정보 수정
