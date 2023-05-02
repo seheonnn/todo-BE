@@ -10,7 +10,7 @@ import javax.persistence.*;
 import static javax.persistence.FetchType.*;
 
 @Entity(name = "Like")
-@Table(name = "Like")
+@Table(name = "Likes")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

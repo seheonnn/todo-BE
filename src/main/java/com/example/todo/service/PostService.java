@@ -4,14 +4,12 @@ import com.example.todo.dto.PostDTO;
 import com.example.todo.entities.LikeEntity;
 import com.example.todo.entities.PostEntity;
 import com.example.todo.entities.UserEntity;
+import com.example.todo.repository.FollowRepository;
 import com.example.todo.repository.LikeRepository;
 import com.example.todo.repository.PostRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +25,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final FollowRepository followRepository;
 
     public List<PostEntity> findAllByUserId(Long userId) {
         return postRepository.findAllByUserId(userId);
@@ -75,12 +74,12 @@ public class PostService {
 
     @Transactional
     public ResponseEntity<String> addLike(
-            @AuthenticationPrincipal Authentication authentication,
+            Long userId,
             PostDTO post) throws Exception {
         UserEntity writerEntity = userRepository.findById(post.getUser().getUserIdx())
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
-        UserDetails principal = (UserDetails) authentication.getPrincipal();
-        UserEntity userEntity = userRepository.findByEmail(principal.getUsername())
+
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
         PostEntity postEntity = post.toEntity();
 
@@ -88,7 +87,12 @@ public class PostService {
             throw new Exception("같은 유저는 좋아요를 할 수 없습니다.");
         }
 
-        // 테이블에서 찾기
+        // 친구 관계인지 확인
+        if(!followRepository.findAllByToUser(userEntity.getUserIdx()).contains(writerEntity)
+                && !followRepository.findAllByFromUser(userEntity.getUserIdx()).contains(writerEntity)) {
+            throw new Exception("친구 관계가 아니므로 좋아요를 할 수 없습니다.");
+        }
+
         Optional<LikeEntity> findLikeEntity = likeRepository.findByPostAndUser(postEntity, userEntity);
         if(findLikeEntity.isPresent()) {
             likeRepository.delete(findLikeEntity.get());

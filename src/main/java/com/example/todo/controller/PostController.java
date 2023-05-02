@@ -6,8 +6,6 @@ import com.example.todo.entities.PostEntity;
 import com.example.todo.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +45,7 @@ public class PostController {
     }
 
     // 공유된 게시글 조회
-    @PostMapping(path = "/shared")
+    @GetMapping(path = "/shared")
     public List<PostEntity> getSharedPosts() {
         return postService.findSharedPosts();
     }
@@ -59,11 +57,11 @@ public class PostController {
     }
 
     // 좋아요 / 취소
-    @PostMapping("/add/like/{userId}")
+    @PostMapping(path = "/add/like/{userId}")
     public ResponseEntity<Void> addLike(
-            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable Long userId,
             @RequestBody PostDTO post) throws Exception {
-        postService.addLike(authentication, post);
+        postService.addLike(userId, post);
         return ResponseEntity.ok(null);
     }
 }

@@ -31,7 +31,7 @@ public class PostEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description", nullable = true)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "shared", nullable = false)
@@ -41,7 +41,7 @@ public class PostEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
 
-    @Column(name = "endDate", nullable = false)
+    @Column(name = "endDate")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDate;
 
