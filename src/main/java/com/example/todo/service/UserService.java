@@ -1,26 +1,29 @@
 package com.example.todo.service;
 
+import com.example.todo.config.security.JwtTokenProvider;
 import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class UserService {
 
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
-    private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
-    public Optional<UserEntity> getMyInfo(Long userIdx) {
-        return userRepository.findById(userIdx);
+    public Optional<UserEntity> getMyInfo(HttpServletRequest request) throws Exception {
+        return userRepository.findById(jwtTokenProvider.getCurrentUser(request));
     }
 
     public Optional<UserEntity> updateMyInfo(UserDTO user) {

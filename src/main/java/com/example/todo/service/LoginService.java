@@ -34,43 +34,18 @@ public class LoginService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private CustomUserDetailService customUserDetailService;
 
     @Autowired
     JavaMailSender mailSender;
-    private String secretKey;
-    private final JwtTokenProvider jwtTokenProvider;
+
     private final RedisTemplate redisTemplate;
 
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    private final JwtTokenProvider jwtTokenProvider;
 
 
-    @Autowired
-    public void JwtProvider(@Value("${jwt.secret}") String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public UserEntity getCurrentUser(HttpServletRequest request) throws Exception {
-        // Authorization 헤더에서 JWT 토큰 추출
-        String jwtToken = jwtTokenProvider.resolveToken(request);
-        if (!jwtTokenProvider.validateToken(jwtToken)) {
-            throw new Exception("유효하지 않은 토큰입니다.");
-        }
-//        log.info(jwtToken);
-        // JWT 토큰에서 사용자 정보 추출
-        String username = Jwts.parser()
-                .setSigningKey(secretKey.getBytes())
-                .parseClaimsJws(jwtToken)
-                .getBody()
-                .getSubject();
-
-        // 추출한 사용자 정보를 이용하여 UserDetails 객체 반환
-//        log.info(String.valueOf(customUserDetailService.loadUserByUsername(username)));
-        return (UserEntity) customUserDetailService.loadUserByUsername(username);
-    }
 
     public UserEntity join(UserDTO user) throws Exception {
         UserEntity userEntity = user.toEntity();
@@ -102,36 +77,36 @@ public class LoginService {
         userRepository.saveAndFlush(userEntity);
 
         // token 발급
-        TokenDTO token = jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
+        TokenDTO token = jwtTokenProvider.createToken(userEntity.getUserIdx(), userEntity.getRole());
 
         // Redis 에 RTL user@email.com(key) : ----token-----(value) 형태로 token 저장
         redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), token.getRefreshToken(), token.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
         return token.getRefreshToken();
     }
 
-    public String logout(HttpServletRequest request) {
-        try {
-            // token 으로 user 정보 받음
-            UserEntity user = getCurrentUser(request);
-
-            user.setLogin_cnt(0L);
-            userRepository.saveAndFlush(user);
-
-            // Redis 에서 해당 User email 로 저장된 token 이 있는지 확인 후 있는 경우 삭제
-            Object token = redisTemplate.opsForValue().get("RT:" + user.getEmail());
-            if (token != null) {
-                redisTemplate.delete("RT:"+user.getEmail());
-            }
-
-            Long expire = jwtTokenProvider.getExpireTime((String) token).getTime();
-            redisTemplate.opsForValue().set(token, "logout", expire, TimeUnit.MILLISECONDS);
-
-            return "로그아웃 성공";
-        } catch (Exception exception) {
-//            return exception.getMessage();
-            return "유효하지 않은 토큰입니다.";
-        }
-    }
+//    public String logout(HttpServletRequest request) {
+//        try {
+//            // token 으로 user 정보 받음
+//            UserEntity user = jwtTokenProvider.getCurrentUser(request);
+//
+//            user.setLogin_cnt(0L);
+//            userRepository.saveAndFlush(user);
+//
+//            // Redis 에서 해당 User email 로 저장된 token 이 있는지 확인 후 있는 경우 삭제
+//            Object token = redisTemplate.opsForValue().get("RT:" + user.getEmail());
+//            if (token != null) {
+//                redisTemplate.delete("RT:"+user.getEmail());
+//            }
+//
+//            Long expire = jwtTokenProvider.getExpireTime((String) token).getTime();
+//            redisTemplate.opsForValue().set(token, "logout", expire, TimeUnit.MILLISECONDS);
+//
+//            return "로그아웃 성공";
+//        } catch (Exception exception) {
+////            return exception.getMessage();
+//            return "유효하지 않은 토큰입니다.";
+//        }
+//    }
 
     public boolean validatePw(ChangePwInfo changePwInfo) throws Exception {
         UserEntity userEntity = userRepository.findById(changePwInfo.getUserIdx()).orElse(null);

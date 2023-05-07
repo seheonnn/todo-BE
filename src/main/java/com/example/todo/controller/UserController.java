@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Log4j2
@@ -27,8 +28,8 @@ public class UserController {
 
     // 내 정보 조회
     @GetMapping("")
-    public ResponseEntity<Optional<UserEntity>> getMyInfo(@RequestBody UserDTO user) {
-        return ResponseEntity.ok(userService.getMyInfo(user.getUserIdx()));
+    public ResponseEntity<Optional<UserEntity>> getMyInfo(HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok(userService.getMyInfo(request));
     }
 
     // 내 정보 수정
