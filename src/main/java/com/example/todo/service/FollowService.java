@@ -8,6 +8,7 @@ import com.example.todo.entities.UserEntity;
 import com.example.todo.repository.FollowRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +20,11 @@ import java.util.Optional;
 @Slf4j
 public class FollowService {
 
-    private final FollowRepository followRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private FollowRepository followRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public FollowService(FollowRepository followRepository, UserRepository userRepository) {
-        this.followRepository = followRepository;
-        this.userRepository = userRepository;
-    }
 
     public String followToggle(FollowDTO follow) throws Exception {
         if (follow.getFromUser().equals(follow.getToUser()))

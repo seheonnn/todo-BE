@@ -26,10 +26,11 @@ public class UserService {
         return userRepository.findById(jwtTokenProvider.getCurrentUser(request));
     }
 
-    public Optional<UserEntity> updateMyInfo(UserDTO user) {
-        UserEntity userEntity = userRepository.findById(user.getUserIdx()).orElse(null);
+    public Optional<UserEntity> updateMyInfo(UserDTO user, HttpServletRequest request) throws Exception {
+        Long userIdx = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findById(userIdx).orElse(null);
         if (userEntity == null) {
-            return Optional.empty();
+            throw new Exception("사용자를 찾을 수 없습니다.");
         }
         if (user.getName() != null) {
             userEntity.setName(user.getName());
@@ -41,8 +42,9 @@ public class UserService {
 
     }
 
-    public Optional<UserEntity> deactivateUser(UserDTO user) {
-        UserEntity userEntity = userRepository.findById(user.getUserIdx()).orElse(null);
+    public Optional<UserEntity> deactivateUser(HttpServletRequest request) throws Exception {
+        Long userIdx = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findById(userIdx).orElse(null);
         if (userEntity == null) {
             return Optional.empty();
         }

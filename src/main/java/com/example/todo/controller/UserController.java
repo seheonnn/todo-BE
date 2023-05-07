@@ -21,10 +21,10 @@ import java.util.Optional;
 @RequestMapping(value = "/users")
 public class UserController {
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    LoginService loginService;
+    private LoginService loginService;
 
     // 내 정보 조회
     @GetMapping("")
@@ -34,23 +34,23 @@ public class UserController {
 
     // 내 정보 수정
     @PostMapping("")
-    public ResponseEntity<Void> updateMyInfo(@RequestBody UserDTO user) {
-        userService.updateMyInfo(user);
+    public ResponseEntity<Void> updateMyInfo(@RequestBody UserDTO user, HttpServletRequest request) throws Exception {
+        userService.updateMyInfo(user, request);
         return ResponseEntity.ok(null);
     }
 
     // 비밀번호 변경
     @PostMapping("/changepw")
-    public ResponseEntity<Void> updatePW(@RequestBody ChangePwInfo changePw) throws Exception {
-        if (loginService.validatePw(changePw))
-            loginService.changePw(changePw);
+    public ResponseEntity<Void> updatePW(@RequestBody ChangePwInfo changePw, HttpServletRequest request) throws Exception {
+        if (loginService.validatePw(changePw, request))
+            loginService.changePw(changePw, request);
         return ResponseEntity.ok(null);
     }
 
     // 회원 탈퇴
     @PostMapping("/delete")
-    public ResponseEntity<Optional<UserEntity>> deactivateUser(@RequestBody UserDTO user) {
-        userService.deactivateUser(user);
+    public ResponseEntity<Optional<UserEntity>> deactivateUser(HttpServletRequest request) throws Exception {
+        userService.deactivateUser(request);
         return ResponseEntity.ok(null);
     }
 

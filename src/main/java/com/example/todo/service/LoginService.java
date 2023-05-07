@@ -34,16 +34,16 @@ public class LoginService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JavaMailSender mailSender;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
-    JavaMailSender mailSender;
-
-    private final RedisTemplate redisTemplate;
+    private JwtTokenProvider jwtTokenProvider;
 
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    private final JwtTokenProvider jwtTokenProvider;
 
 
 
@@ -84,39 +84,43 @@ public class LoginService {
         return token.getRefreshToken();
     }
 
-//    public String logout(HttpServletRequest request) {
-//        try {
-//            // token 으로 user 정보 받음
-//            UserEntity user = jwtTokenProvider.getCurrentUser(request);
-//
-//            user.setLogin_cnt(0L);
-//            userRepository.saveAndFlush(user);
-//
-//            // Redis 에서 해당 User email 로 저장된 token 이 있는지 확인 후 있는 경우 삭제
-//            Object token = redisTemplate.opsForValue().get("RT:" + user.getEmail());
-//            if (token != null) {
-//                redisTemplate.delete("RT:"+user.getEmail());
-//            }
-//
-//            Long expire = jwtTokenProvider.getExpireTime((String) token).getTime();
-//            redisTemplate.opsForValue().set(token, "logout", expire, TimeUnit.MILLISECONDS);
-//
-//            return "로그아웃 성공";
-//        } catch (Exception exception) {
-////            return exception.getMessage();
-//            return "유효하지 않은 토큰입니다.";
-//        }
-//    }
+    public String logout(HttpServletRequest request) {
+        try {
+            // token 으로 user 정보 받음
+            Long userIdx = jwtTokenProvider.getCurrentUser(request);
+            UserEntity user = userRepository.findById(userIdx)
+                    .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다."));
 
-    public boolean validatePw(ChangePwInfo changePwInfo) throws Exception {
-        UserEntity userEntity = userRepository.findById(changePwInfo.getUserIdx()).orElse(null);
+            user.setLogin_cnt(0L);
+            userRepository.saveAndFlush(user);
+
+            // Redis 에서 해당 User email 로 저장된 token 이 있는지 확인 후 있는 경우 삭제
+            Object token = redisTemplate.opsForValue().get("RT:" + user.getEmail());
+            if (token != null) {
+                redisTemplate.delete("RT:"+user.getEmail());
+            }
+
+            Long expire = jwtTokenProvider.getExpireTime((String) token).getTime();
+            redisTemplate.opsForValue().set(token, "logout", expire, TimeUnit.MILLISECONDS);
+
+            return "로그아웃 성공";
+        } catch (Exception exception) {
+//            return exception.getMessage();
+            return "유효하지 않은 토큰입니다.";
+        }
+    }
+
+    public boolean validatePw(ChangePwInfo changePwInfo, HttpServletRequest request) throws Exception {
+        Long userIdx = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findById(userIdx).orElse(null);
         if (encoder.matches(changePwInfo.getOriginalPw(), userEntity.getPassword()))
             return true;
         else throw new Exception("비밀번호 불일치");
     }
 
-    public Optional<UserEntity> changePw(ChangePwInfo changePwInfo) throws Exception {
-        UserEntity userEntity = userRepository.findById(changePwInfo.getUserIdx()).orElse(null);
+    public Optional<UserEntity> changePw(ChangePwInfo changePwInfo, HttpServletRequest request) throws Exception {
+        Long userIdx = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findById(userIdx).orElse(null);
         String encryptedPw = encoder.encode(changePwInfo.getNewPw());
         if (changePwInfo.getNewPw().equals(changePwInfo.getNewPwCheck())) {
             userEntity.setPassword(encryptedPw);

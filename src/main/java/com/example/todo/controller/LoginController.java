@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginController {
 
     @Autowired
-    LoginService loginService;
+    private LoginService loginService;
 
 
     // 회원가입
@@ -34,12 +34,12 @@ public class LoginController {
     }
 
     // 로그아웃
-//    @PostMapping("/log-out")
-//    public ResponseEntity<String> logout(HttpServletRequest request) throws Exception {
-//        return ResponseEntity.ok(loginService.logout(request));
-//    }
+    @PostMapping("/log-out")
+    public ResponseEntity<String> logout(HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok(loginService.logout(request));
+    }
 
-    //비밀번호 찾기
+    // 비밀번호 찾기
     @PostMapping("/findpw")
     public ResponseEntity<String> findPw(@RequestBody UserDTO user) throws Exception {
         return ResponseEntity.ok(loginService.findPw(user));
