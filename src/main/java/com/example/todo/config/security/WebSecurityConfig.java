@@ -1,5 +1,6 @@
 package com.example.todo.config.security;
 
+import com.example.todo.config.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
