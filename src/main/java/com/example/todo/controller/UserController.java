@@ -5,7 +5,6 @@ import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
 import com.example.todo.service.LoginService;
 import com.example.todo.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
