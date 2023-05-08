@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.config.security.JwtTokenProvider;
 import com.example.todo.dto.PostDTO;
 import com.example.todo.entities.LikeEntity;
 import com.example.todo.entities.PostEntity;
@@ -9,10 +10,12 @@ import com.example.todo.repository.LikeRepository;
 import com.example.todo.repository.PostRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +25,20 @@ import java.util.Optional;
 public class PostService {
     // todo 유효성 추가
 
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final LikeRepository likeRepository;
-    private final FollowRepository followRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private LikeRepository likeRepository;
+    @Autowired
+    private FollowRepository followRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
-    public List<PostEntity> findAllByUserId(Long userId) {
-        return postRepository.findAllByUserId(userId);
+    public List<PostEntity> findAllByUserId(HttpServletRequest request) throws Exception {
+        Long userIdx = jwtTokenProvider.getCurrentUser(request);
+        return postRepository.findAllByUserId(userIdx);
     }
 
     @Transactional
