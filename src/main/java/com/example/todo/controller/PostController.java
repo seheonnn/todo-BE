@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -18,9 +19,9 @@ public class PostController {
     private final PostService postService;
 
     // 내 게시글 모두 조회
-    @GetMapping(path = "/{userId}")
-    public List<PostEntity> posts(@PathVariable Long userId) {
-        return postService.findAllByUserId(userId);
+    @GetMapping(path = "")
+    public List<PostEntity> posts(HttpServletRequest request) throws Exception {
+        return postService.findAllByUserId(request);
     }
 
     // 게시글 생성
