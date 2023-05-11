@@ -7,7 +7,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,10 +28,13 @@ import java.util.Date;
 public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     // 토큰 유효시간 30분
     private long tokenValidTime = 30 * 60 * 1000L;
-    private final UserDetailsService userDetailsService;
 
     // 객체 초기화, secretKey 를 Base64 로 인코딩한다.
     @PostConstruct
@@ -95,11 +100,18 @@ public class JwtTokenProvider {
             throw new Exception("유효하지 않은 토큰입니다.");
         }
 
-        // JWT 토큰에서 사용자 정보 추출
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(jwtToken)
-                .getBody()
-                .getSubject();
+        Object isLogOut = redisTemplate.opsForValue().get(jwtToken); // token 을 key 로 value 가져옴 (null 이면 유효 토큰, logout 이면 유효하지 않은 토큰)
+        // 로그인 시 redis 에 email : token 형태로 저장
+        // 로그아웃 시 redis 에 token : logout 형태로 저장
+        if (isLogOut == null) {
+            // JWT 토큰에서 사용자 정보 추출
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(jwtToken)
+                    .getBody()
+                    .getSubject();
+        }
+        else
+            throw new Exception("유효하지 않은 토큰입니다.");
     }
 }
