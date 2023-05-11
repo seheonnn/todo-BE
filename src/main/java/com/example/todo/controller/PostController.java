@@ -58,11 +58,9 @@ public class PostController {
     }
 
     // 좋아요 / 취소
-    @PostMapping(path = "/add/like/{userId}")
-    public ResponseEntity<Void> addLike(
-            @PathVariable Long userId,
-            @RequestBody PostDTO post) throws Exception {
-        postService.addLike(userId, post);
+    @PostMapping(path = "/add/like")
+    public ResponseEntity<Void> addLike(@RequestBody PostDTO post, HttpServletRequest request) throws Exception {
+        postService.addLike(post, request);
         return ResponseEntity.ok(null);
     }
 }

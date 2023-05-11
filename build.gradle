@@ -44,8 +44,8 @@ dependencies {
 	// email 관련
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-//	implementation 'org.hibernate:hibernate-entitymanager:5.2.3.Final'
-//	implementation 'org.hibernate:hibernate-core:5.2.1.Final'
+	// OAuth
+//	implementation 'org.springframework.security:spring-security-oauth2-client'
 }
 
 tasks.named('test') {

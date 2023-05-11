@@ -77,7 +77,7 @@ public class LoginService {
         userRepository.saveAndFlush(userEntity);
 
         // token 발급
-        TokenDTO token = jwtTokenProvider.createToken(userEntity.getUserIdx(), userEntity.getRole());
+        TokenDTO token = jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
 
         // Redis 에 RTL user@email.com(key) : ----token-----(value) 형태로 token 저장
         redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), token.getRefreshToken(), token.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
@@ -87,8 +87,8 @@ public class LoginService {
     public String logout(HttpServletRequest request) {
         try {
             // token 으로 user 정보 받음
-            Long userIdx = jwtTokenProvider.getCurrentUser(request);
-            UserEntity user = userRepository.findById(userIdx)
+            String email = jwtTokenProvider.getCurrentUser(request);
+            UserEntity user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다."));
 
             user.setLogin_cnt(0L);
@@ -111,16 +111,16 @@ public class LoginService {
     }
 
     public boolean validatePw(ChangePwInfo changePwInfo, HttpServletRequest request) throws Exception {
-        Long userIdx = jwtTokenProvider.getCurrentUser(request);
-        UserEntity userEntity = userRepository.findById(userIdx).orElse(null);
+        String email = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findByEmail(email).orElse(null);
         if (encoder.matches(changePwInfo.getOriginalPw(), userEntity.getPassword()))
             return true;
         else throw new Exception("비밀번호 불일치");
     }
 
     public Optional<UserEntity> changePw(ChangePwInfo changePwInfo, HttpServletRequest request) throws Exception {
-        Long userIdx = jwtTokenProvider.getCurrentUser(request);
-        UserEntity userEntity = userRepository.findById(userIdx).orElse(null);
+        String email = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findByEmail(email).orElse(null);
         String encryptedPw = encoder.encode(changePwInfo.getNewPw());
         if (changePwInfo.getNewPw().equals(changePwInfo.getNewPwCheck())) {
             userEntity.setPassword(encryptedPw);
@@ -163,7 +163,7 @@ public class LoginService {
         mv.setViewName("findPw");
         mv.addObject("num", num);
 
-        log.info(String.valueOf(mv.getModel().get("num")));
+//        log.info(String.valueOf(mv.getModel().get("num")));
 
         return mv.getModel().get("num").toString();
     }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Log4j2
@@ -29,13 +30,13 @@ public class FollowController {
 
     // 팔로워 조회
     @GetMapping("/followers")
-    public ResponseEntity<List<SimpleAccountInfo>> getFollowers(@RequestBody UserDTO user) throws Exception {
-        return ResponseEntity.ok(followService.getFollower(user));
+    public ResponseEntity<List<SimpleAccountInfo>> getFollowers(HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok(followService.getFollower(request));
     }
 
     // 팔로잉 조회
     @GetMapping("/followings")
-    public ResponseEntity<List<SimpleAccountInfo>> getFolloings(@RequestBody UserDTO user) throws Exception {
-        return ResponseEntity.ok(followService.getFollowings(user));
+    public ResponseEntity<List<SimpleAccountInfo>> getFolloings(HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok(followService.getFollowings(request));
     }
 }

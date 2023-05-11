@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.config.security.JwtTokenProvider;
 import com.example.todo.dto.FollowDTO;
 import com.example.todo.dto.SimpleAccountInfo;
 import com.example.todo.dto.UserDTO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,8 @@ public class FollowService {
     private FollowRepository followRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
 
     public String followToggle(FollowDTO follow) throws Exception {
@@ -47,8 +51,9 @@ public class FollowService {
         }
     }
 
-    public List<SimpleAccountInfo> getFollower(UserDTO user) throws Exception {
-        UserEntity userEntity = userRepository.findById(user.getUserIdx())
+    public List<SimpleAccountInfo> getFollower(HttpServletRequest request) throws Exception {
+        String email = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
 
         List<UserEntity> followers = followRepository.findAllByToUser(userEntity.getUserIdx());
@@ -60,8 +65,9 @@ public class FollowService {
         return userInfos;
     }
 
-    public List<SimpleAccountInfo> getFollowings(UserDTO user) throws Exception {
-        UserEntity userEntity = userRepository.findById(user.getUserIdx())
+    public List<SimpleAccountInfo> getFollowings(HttpServletRequest request) throws Exception {
+        String email = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
 
         List<UserEntity> followings = followRepository.findAllByFromUser(userEntity.getUserIdx());

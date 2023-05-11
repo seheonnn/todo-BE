@@ -39,8 +39,8 @@ public class JwtTokenProvider {
 
 
     // JWT 토큰 생성
-    public TokenDTO createToken(Long userIdx, String roles) {
-        Claims claims = Jwts.claims().setSubject(String.valueOf(userIdx)); // JWT payload 에 저장되는 정보단위
+    public TokenDTO createToken(String email, String roles) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(email)); // JWT payload 에 저장되는 정보단위
         claims.put("roles", roles); // 정보는 key : value 쌍으로 저장된다.
         Date now = new Date();
         Date expiresTime = new Date(now.getTime() + tokenValidTime);
@@ -88,7 +88,7 @@ public class JwtTokenProvider {
     }
 
     // 토큰에서 User 정보 추출
-    public Long getCurrentUser(HttpServletRequest request) throws Exception {
+    public String getCurrentUser(HttpServletRequest request) throws Exception {
         // Authorization 헤더에서 JWT 토큰 추출
         String jwtToken = resolveToken(request);
         if (!validateToken(jwtToken)) {
@@ -96,10 +96,10 @@ public class JwtTokenProvider {
         }
 
         // JWT 토큰에서 사용자 정보 추출
-        return Long.valueOf(Jwts.parser()
+        return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwtToken)
                 .getBody()
-                .getSubject());
+                .getSubject();
     }
 }
