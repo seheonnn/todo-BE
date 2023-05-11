@@ -37,8 +37,8 @@ public class PostService {
     private JwtTokenProvider jwtTokenProvider;
 
     public List<PostEntity> findAllByUserId(HttpServletRequest request) throws Exception {
-        Long userIdx = jwtTokenProvider.getCurrentUser(request);
-        return postRepository.findAllByUserId(userIdx);
+        String email = jwtTokenProvider.getCurrentUser(request);
+        return postRepository.findAllByEmail(email);
     }
 
     @Transactional
@@ -83,13 +83,12 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseEntity<String> addLike(
-            Long userId,
-            PostDTO post) throws Exception {
+    public ResponseEntity<String> addLike(PostDTO post, HttpServletRequest request) throws Exception {
         UserEntity writerEntity = userRepository.findById(post.getUser().getUserIdx())
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
 
-        UserEntity userEntity = userRepository.findById(userId)
+        String email = jwtTokenProvider.getCurrentUser(request);
+        UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
         PostEntity postEntity = post.toEntity();
 
