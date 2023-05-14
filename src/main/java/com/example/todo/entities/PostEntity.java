@@ -56,6 +56,7 @@ public class PostEntity {
 
     public PostDTO toDTO() {
         return PostDTO.builder()
+                .postIdx(postIdx)
                 .user(user)
                 .title(title)
                 .description(description)
