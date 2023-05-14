@@ -109,7 +109,7 @@ public class PostService {
         String email = jwtTokenProvider.getCurrentUser(request);
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
-        PostEntity postEntity = post.toEntity();
+        PostEntity postEntity = postRepository.findById(post.getPostIdx()).get();
 
         if(writerEntity.getUser().getUserIdx().equals(userEntity.getUserIdx())) {
             throw new Exception("같은 유저는 좋아요를 할 수 없습니다.");
@@ -124,8 +124,12 @@ public class PostService {
         Optional<LikeEntity> findLikeEntity = likeRepository.findByPostAndUser(postEntity, userEntity);
         if(findLikeEntity.isPresent()) {
             likeRepository.delete(findLikeEntity.get());
-            postEntity.setLikeCnt(postEntity.getLikeCnt()-1);
-            return ResponseEntity.ok("좋아요 취소 성공");
+            if(postEntity.getLikeCnt() > 0) {
+                postEntity.setLikeCnt(postEntity.getLikeCnt()-1);
+                return ResponseEntity.ok("좋아요 취소 성공");
+            } else {
+                throw new Exception("좋아요를 취소할 수 없습니다.");
+            }
         } else {
             likeRepository.saveAndFlush(new LikeEntity(postEntity, userEntity));
             postEntity.setLikeCnt(postEntity.getLikeCnt()+1);
