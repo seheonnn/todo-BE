@@ -1,11 +1,11 @@
 package com.example.todo.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// Cors error 설정
 @Configuration
 @Component
 public class WebConfig implements WebMvcConfigurer {
@@ -13,8 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH") // Http Method 들 하용
                 .allowedHeaders("*")
-                .exposedHeaders("Authorization", "X-AUTH-TOKEN");
+                .exposedHeaders("Authorization", "X-AUTH-TOKEN"); // 응답헤더에 X-AUTH-TOKEN 이라는 이름의 토큰 포함
     }
 }
