@@ -46,6 +46,9 @@ dependencies {
 
 	// OAuth
 	implementation 'org.springframework.security:spring-security-oauth2-client'
+
+	// JSON
+	implementation 'org.json:json:20210307'
 }
 
 tasks.named('test') {

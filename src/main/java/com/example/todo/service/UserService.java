@@ -26,15 +26,6 @@ public class UserService {
 
 
     public Optional<UserEntity> getMyInfo(HttpServletRequest request) throws Exception {
-
-
-//        String email = jwtTokenProvider.getCurrentUser(request);
-//        Object token = redisTemplate.opsForValue().get("RT:" + email);
-//        if (token == null) {
-//            throw new Exception("이미 만료된 토큰입니다.");
-//        }
-
-
         return userRepository.findByEmail(jwtTokenProvider.getCurrentUser(request));
     }
 

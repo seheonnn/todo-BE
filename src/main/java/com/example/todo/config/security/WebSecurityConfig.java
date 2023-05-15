@@ -18,8 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
-//    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-//    private final UserOAuth2Service userOAuth2Service;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final UserOAuth2Service userOAuth2Service;
 
     // 암호화에 필요한 PasswordEncoder 를 Bean 등록
     @Bean
@@ -46,15 +46,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/follow/**").hasRole("USER")
                 .antMatchers("/**").permitAll() // 그 외 나머지 요청은 누구나 접근 가능
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
                 // kakao 로그인 관련 추가
-//                .oauth2Login()
-//                .defaultSuccessUrl("/login-success")
-//                .successHandler(oAuth2AuthenticationSuccessHandler)
-//                .userInfoEndpoint()
-//                .userService(userOAuth2Service);
+                .oauth2Login()
+                .defaultSuccessUrl("/login-success")
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .userInfoEndpoint()
+                .userService(userOAuth2Service);
 
-//        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
 
         // JwtAuthenticationFilter 를 UsernamePasswordAuthenticationFilter 전에 실행
     }
