@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -51,6 +52,16 @@ public class UserService {
         if (userEntity == null) {
             throw new Exception("사용자를 찾을 수 없습니다.");
         }
+
+        // Redis 에서 로그인되어 있는 토큰 삭제
+        Object token = redisTemplate.opsForValue().get("RT:" + email);
+        if (token != null) {
+            redisTemplate.delete("RT:"+email);
+        }
+        // 탈퇴한 토큰 차단
+        Long expire = jwtTokenProvider.getExpireTime((String) token).getTime();
+        redisTemplate.opsForValue().set(token, "logout", expire, TimeUnit.MILLISECONDS);
+
         userEntity.setStatus('D');
         return Optional.of(userRepository.saveAndFlush(userEntity));
     }

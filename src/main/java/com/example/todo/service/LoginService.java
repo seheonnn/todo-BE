@@ -48,16 +48,26 @@ public class LoginService {
 
 
     public UserEntity join(UserDTO user) throws Exception {
-        UserEntity userEntity = user.toEntity();
-        if(userRepository.findByEmail(userEntity.getEmail()).isPresent()){
-            throw new Exception("이미 존재하는 이메일입니다.");
+        Optional<UserEntity> userEntityOptional = userRepository.findByEmail(user.getEmail());
+        if(userEntityOptional.isPresent()){
+            UserEntity userEntity = userEntityOptional.get();
+            log.info(String.valueOf(userEntity.getStatus()));
+
+            if ('D'==userEntity.getStatus()) {
+                String encryptedPw = encoder.encode(user.getPassword());
+                userEntity.setPassword(encryptedPw);
+                userEntity.setStatus('A');
+                return userRepository.saveAndFlush(userEntity);
+            }
+            else
+                throw new Exception("이미 존재하는 이메일입니다.");
         }
-        String encryptedPw = encoder.encode(userEntity.getPassword());
+        String encryptedPw = encoder.encode(user.getPassword());
         UserEntity newUser = UserEntity.builder()
-                .email(userEntity.getEmail())
+                .email(user.getEmail())
                 .password(encryptedPw)
-                .name(userEntity.getName())
-                .profileImage(userEntity.getProfileImage())
+                .name(user.getName())
+                .profileImage(user.getProfileImage())
                 .status('A')
                 .role(String.valueOf(RoleType.USER))
                 .login_cnt(0L)
@@ -72,6 +82,8 @@ public class LoginService {
         if (!encoder.matches(user.getPassword(), userEntity.getPassword())) {
             throw new Exception("잘못된 비밀번호입니다.");
         }
+        if (userEntity.getStatus() == 'D')
+            throw new Exception("탈퇴된 사용자입니다.");
         userEntity.setLogin_at(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
         userEntity.setLogin_cnt(userEntity.getLogin_cnt()+1);
         userRepository.saveAndFlush(userEntity);
