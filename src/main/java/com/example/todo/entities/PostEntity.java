@@ -50,7 +50,7 @@ public class PostEntity {
     private boolean completed;
 
 
-    @Column(name = "like_cnt", nullable = false)
+    @Column(name = "like_cnt", nullable = true)
     @ColumnDefault("0")
     private Long likeCnt;
 
