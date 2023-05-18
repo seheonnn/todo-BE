@@ -29,8 +29,8 @@ public class PostController {
 
     // 게시글 생성
     @PostMapping(path = "/create")
-    public ApiResult<?> create(@RequestBody PostDTO postDTO) throws Exception {
-        PostDTO post = postService.save(postDTO);
+    public ApiResult<?> create(@RequestBody PostDTO postDTO, HttpServletRequest request) throws Exception {
+        PostDTO post = postService.save(postDTO, request);
         if(post == null) {
             ApiResult.ERROR("글 작성 실패", HttpStatus.BAD_REQUEST);
         }

@@ -42,12 +42,13 @@ public class PostService {
     }
 
     @Transactional
-    public PostDTO save(PostDTO post) throws Exception {
-        Optional<UserEntity> userEntity = userRepository.findByEmail(post.getUser().getEmail());
+    public PostDTO save(PostDTO post, HttpServletRequest request) throws Exception {
+        String email = jwtTokenProvider.getCurrentUser(request);
+        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
         if(userEntity.isEmpty()) {
             throw new Exception("존재하지 않는 이메일입니다.");
         } else {
-            UserEntity user = userRepository.findByEmail(post.getUser().getEmail()).get();
+            UserEntity user = userEntity.get();
             PostEntity postEntity = post.toEntity();
             PostEntity newPost = PostEntity.builder()
                     .user(user)
