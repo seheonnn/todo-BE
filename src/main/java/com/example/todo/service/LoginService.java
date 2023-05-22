@@ -91,9 +91,8 @@ public class LoginService {
         TokenDTO refreshToken = jwtTokenProvider.createRefreshToken();
         TokenDTO accessToken = jwtTokenProvider.createAccessToken(userEntity.getEmail(), userEntity.getRole());
 
-        // Redis 에 RTL user@email.com(key) : ----token-----(value) 형태로 token 저장
-        redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), accessToken.getToken(), accessToken.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
-//        String responseBody = "{\"atk\":\"" + accessToken.getToken() + "\", \"rtk\":\"" + refreshToken.getToken() + "\"}";
+        // login 시 Redis 에 RT: user@email.com(key) : ----token-----(value) 형태로 token 저장
+        redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), accessToken.getToken(), accessToken.getTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
         List<TokenDTO> tokenDTOList = new ArrayList<>();
         tokenDTOList.add(refreshToken);
         tokenDTOList.add(accessToken);

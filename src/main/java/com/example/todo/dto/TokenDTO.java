@@ -11,5 +11,5 @@ public class TokenDTO {
 
     private String types;
     private String token;
-    private Date RefreshTokenExpiresTime;
+    private Date tokenExpiresTime;
 }

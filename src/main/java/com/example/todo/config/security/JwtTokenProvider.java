@@ -98,7 +98,8 @@ public class JwtTokenProvider {
     public boolean validateToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            if (claims.getBody().get("types") == "atk")
+            // Access 토큰의 경우 redis 까지 검사
+            if (claims.getBody().get("types").equals("atk"))
             {
                 Object isLogOut = redisTemplate.opsForValue().get(jwtToken); // token 을 key 로 value 가져옴 (null 이면 유효 토큰, logout 이면 유효하지 않은 토큰)
                 // 로그인 시 redis 에 email : token 형태로 저장
