@@ -28,8 +28,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String email = (String) kakao_account.get("email");
         Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
         String nickname = (String) properties.get("nickname");
-        TokenDTO jwt = jwtTokenProvider.createToken(email, String.valueOf(RoleType.USER));
-        String url = makeRedirectUrl(jwt.getRefreshToken());
+
+        TokenDTO accessToken = jwtTokenProvider.createAccessToken(email, String.valueOf(RoleType.USER));
+
+        String url = makeRedirectUrl(accessToken.getToken());
 
         if(response.isCommitted()) {
             logger.debug("응답이 이미 커밋된 상태입니다. " + url + "로 리다이렉트 할 수 없습니다.");

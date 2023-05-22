@@ -8,6 +8,6 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class TokenDTO {
-    private String RefreshToken;
+    private String token;
     private Date RefreshTokenExpiresTime;
 }

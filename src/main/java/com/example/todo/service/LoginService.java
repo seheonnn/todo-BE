@@ -1,18 +1,15 @@
 package com.example.todo.service;
 
 import com.example.todo.config.RoleType;
-import com.example.todo.config.security.CustomUserDetailService;
 import com.example.todo.config.security.JwtTokenProvider;
 import com.example.todo.dto.ChangePwInfo;
 import com.example.todo.dto.TokenDTO;
 import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
 import com.example.todo.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -89,11 +86,13 @@ public class LoginService {
         userRepository.saveAndFlush(userEntity);
 
         // token 발급
-        TokenDTO token = jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
+        TokenDTO refreshToken = jwtTokenProvider.createRefreshToken();
+        TokenDTO accessToken = jwtTokenProvider.createAccessToken(userEntity.getEmail(), userEntity.getRole());
 
         // Redis 에 RTL user@email.com(key) : ----token-----(value) 형태로 token 저장
-        redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), token.getRefreshToken(), token.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
-        return token.getRefreshToken();
+        redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), accessToken.getToken(), accessToken.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
+        String responseBody = "{\"atk\":\"" + accessToken.getToken() + "\", \"rtk\":\"" + refreshToken.getToken() + "\"}";
+        return responseBody;
     }
 
     public String logout(HttpServletRequest request) {
