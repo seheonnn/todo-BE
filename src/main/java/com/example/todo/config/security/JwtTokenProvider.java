@@ -58,7 +58,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiresTime) // Expire Time 설정
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature 에 들어갈 secretkey 값 설정
                 .compact();
-        return new TokenDTO(token, expiresTime);
+        return new TokenDTO(String.valueOf(TokenType.atk), token, expiresTime);
     }
 
     // JWT Refresh 토큰 생성
@@ -75,7 +75,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature 에 들어갈 secretkey 값 설정
                 .claim("types", "rtk")
                 .compact();
-        return new TokenDTO(token, expiresTime);
+        return new TokenDTO(String.valueOf(TokenType.rtk),token, expiresTime);
     }
 
     // JWT 토큰에서 인증 정보 조회
