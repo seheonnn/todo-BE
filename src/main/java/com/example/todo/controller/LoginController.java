@@ -46,4 +46,10 @@ public class LoginController {
     public ResponseEntity<String> findPw(@RequestBody UserDTO user) throws Exception {
         return ResponseEntity.ok(loginService.findPw(user));
     }
+
+    // Access 토큰 재발급 api
+    @GetMapping("/accesstoken")
+    public String getNewAccessToken(@RequestBody String email, HttpServletRequest request) throws Exception {
+        return loginService.getNewAccessToken(email, request);
+    }
 }

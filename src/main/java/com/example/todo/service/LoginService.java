@@ -182,4 +182,11 @@ public class LoginService {
 
         return mv.getModel().get("num").toString();
     }
+
+    public String getNewAccessToken(String email, HttpServletRequest request) throws Exception {
+        String rtk = request.getHeader("rtk");
+        if (!jwtTokenProvider.validateToken(rtk))
+            throw new Exception("유효하지 않은 refresh token 입니다. 재로그인이 필요합니다.");
+        return jwtTokenProvider.createAccessToken(email, String.valueOf(RoleType.USER)).getToken();
+    }
 }
