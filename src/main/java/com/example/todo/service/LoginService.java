@@ -1,18 +1,15 @@
 package com.example.todo.service;
 
 import com.example.todo.config.RoleType;
-import com.example.todo.config.security.CustomUserDetailService;
 import com.example.todo.config.security.JwtTokenProvider;
 import com.example.todo.dto.ChangePwInfo;
 import com.example.todo.dto.TokenDTO;
 import com.example.todo.dto.UserDTO;
 import com.example.todo.entities.UserEntity;
 import com.example.todo.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -23,6 +20,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +75,7 @@ public class LoginService {
         return userRepository.saveAndFlush(newUser);
     }
 
-    public String login(UserDTO user) throws Exception {
+    public List<TokenDTO> login(UserDTO user) throws Exception {
         UserEntity userEntity = userRepository.findByEmail(user.getEmail())
                 .orElseThrow(() -> new Exception("가입되지 않은 이메일입니다."));
         if (!encoder.matches(user.getPassword(), userEntity.getPassword())) {
@@ -89,11 +88,15 @@ public class LoginService {
         userRepository.saveAndFlush(userEntity);
 
         // token 발급
-        TokenDTO token = jwtTokenProvider.createToken(userEntity.getEmail(), userEntity.getRole());
+        TokenDTO refreshToken = jwtTokenProvider.createRefreshToken();
+        TokenDTO accessToken = jwtTokenProvider.createAccessToken(userEntity.getEmail(), userEntity.getRole());
 
-        // Redis 에 RTL user@email.com(key) : ----token-----(value) 형태로 token 저장
-        redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), token.getRefreshToken(), token.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
-        return token.getRefreshToken();
+        // login 시 Redis 에 RT: user@email.com(key) : ----token-----(value) 형태로 token 저장
+        redisTemplate.opsForValue().set("RT:"+userEntity.getEmail(), accessToken.getToken(), accessToken.getTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
+        List<TokenDTO> tokenDTOList = new ArrayList<>();
+        tokenDTOList.add(refreshToken);
+        tokenDTOList.add(accessToken);
+        return tokenDTOList;
     }
 
     public String logout(HttpServletRequest request) {
@@ -178,5 +181,12 @@ public class LoginService {
 //        log.info(String.valueOf(mv.getModel().get("num")));
 
         return mv.getModel().get("num").toString();
+    }
+
+    public String getNewAccessToken(String email, HttpServletRequest request) throws Exception {
+        String rtk = request.getHeader("rtk");
+        if (!jwtTokenProvider.validateToken(rtk))
+            throw new Exception("유효하지 않은 refresh token 입니다. 재로그인이 필요합니다.");
+        return jwtTokenProvider.createAccessToken(email, String.valueOf(RoleType.USER)).getToken();
     }
 }

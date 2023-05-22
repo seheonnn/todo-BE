@@ -15,6 +15,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH") // Http Method 들 하용
                 .allowedHeaders("*")
-                .exposedHeaders("Authorization", "X-AUTH-TOKEN"); // 응답헤더에 X-AUTH-TOKEN 이라는 이름의 토큰 포함
+                .exposedHeaders("Authorization", "atk"); // 응답헤더에 atk 이라는 이름의 토큰 포함
     }
 }

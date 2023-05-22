@@ -36,11 +36,11 @@ public class SocialLoginService {
             userRepository.saveAndFlush(userEntity);
 
             // token 발급
-            TokenDTO token = jwtTokenProvider.createToken(email, "USER");
+            TokenDTO token = jwtTokenProvider.createAccessToken(email, "USER");
 
             // Redis 에 RTL user@email.com(key) : ----token-----(value) 형태로 token 저장
-            redisTemplate.opsForValue().set("RT:"+email, token.getRefreshToken(), token.getRefreshTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
-            return token.getRefreshToken();
+            redisTemplate.opsForValue().set("RT:"+email, token.getToken(), token.getTokenExpiresTime().getTime(), TimeUnit.MILLISECONDS);
+            return token.getToken();
         }
         else {
             UserEntity newUser = UserEntity.builder()
