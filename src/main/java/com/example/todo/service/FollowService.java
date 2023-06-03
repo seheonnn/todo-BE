@@ -30,12 +30,16 @@ public class FollowService {
     private JwtTokenProvider jwtTokenProvider;
 
 
-    public String followToggle(FollowDTO follow) throws Exception {
-        if (follow.getFromUser().equals(follow.getToUser()))
+    public String followToggle(String toUserEmail, HttpServletRequest request) throws Exception {
+        String fromUserEmail = jwtTokenProvider.getCurrentUser(request);
+        if (fromUserEmail.equals(toUserEmail))
             throw new Exception("같은 유저는 팔로우할 수 없습니다.");
-        UserEntity fromUser = userRepository.findById(follow.getFromUser().getUserIdx())
+
+        log.info(toUserEmail);
+        log.info(fromUserEmail);
+        UserEntity fromUser = userRepository.findByEmail(fromUserEmail)
                 .orElseThrow(() -> new Exception("사용자를 찾을 수 없습니다"));
-        UserEntity toUser = userRepository.findById(follow.getToUser().getUserIdx())
+        UserEntity toUser = userRepository.findByEmail(toUserEmail)
                 .orElseThrow(() -> new Exception("대상 사용자를 찾을 수 없습니다"));
 
         Optional<FollowEntity> followRelation = followRepository.findByFromUserAndToUser(fromUser, toUser);

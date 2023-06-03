@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @RestController
@@ -24,8 +25,8 @@ public class FollowController {
 
     // 팔로우 & 언팔로우
     @PostMapping("")
-    public ResponseEntity<String> addFollow(@RequestBody FollowDTO follow) throws Exception {
-        return ResponseEntity.ok(followService.followToggle(follow));
+    public ResponseEntity<String> addFollow(@RequestBody Map<String, String> requestBody, HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok(followService.followToggle(requestBody.get("email"), request));
     }
 
     // 팔로워 조회

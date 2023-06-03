@@ -125,10 +125,10 @@ public class LoginService {
         }
     }
 
-    public boolean validatePw(ChangePwInfo changePwInfo, HttpServletRequest request) throws Exception {
+    public boolean validatePw(String pw, HttpServletRequest request) throws Exception {
         String email = jwtTokenProvider.getCurrentUser(request);
         UserEntity userEntity = userRepository.findByEmail(email).orElse(null);
-        if (encoder.matches(changePwInfo.getOriginalPw(), userEntity.getPassword()))
+        if (encoder.matches(pw, userEntity.getPassword()))
             return true;
         else throw new Exception("비밀번호 불일치");
     }

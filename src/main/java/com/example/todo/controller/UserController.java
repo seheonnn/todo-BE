@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -38,11 +39,18 @@ public class UserController {
         return ResponseEntity.ok(null);
     }
 
+    // 비밀번호 확인
+    @PostMapping("/validatepw")
+    public ResponseEntity<String> validatePw(@RequestBody Map<String, String> requestBody, HttpServletRequest request) throws Exception {
+        if(loginService.validatePw(requestBody.get("originalPw"), request))
+            return ResponseEntity.ok("비밀번호 확인");
+        return ResponseEntity.ok("비밀번호 불일치");
+    }
+
     // 비밀번호 변경
     @PostMapping("/changepw")
-    public ResponseEntity<Void> updatePW(@RequestBody ChangePwInfo changePw, HttpServletRequest request) throws Exception {
-        if (loginService.validatePw(changePw, request))
-            loginService.changePw(changePw, request);
+    public ResponseEntity<Void> updatePw(@RequestBody ChangePwInfo changePw, HttpServletRequest request) throws Exception {
+        loginService.changePw(changePw, request);
         return ResponseEntity.ok(null);
     }
 
