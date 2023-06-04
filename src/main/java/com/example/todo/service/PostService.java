@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -136,5 +137,14 @@ public class PostService {
             postEntity.setLikeCnt(postEntity.getLikeCnt()+1);
             return ResponseEntity.ok("좋아요 성공");
         }
+    }
+    public List<PostEntity> searchPost(String keyword, HttpServletRequest request) throws Exception {
+        String email = jwtTokenProvider.getCurrentUser(request);
+        List<PostEntity> posts = postRepository.findAllByEmailAndKeyword(email, keyword);
+
+        if(posts.isEmpty())
+            throw new Exception(keyword+"와(과) 일치하는 검색 결과가 없습니다.");
+
+        return posts;
     }
 }
