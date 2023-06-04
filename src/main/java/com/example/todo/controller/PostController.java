@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -85,5 +86,11 @@ public class PostController {
     @PostMapping(path = "/add/like")
     public ApiResult<?> addLike(@RequestBody PostDTO post, HttpServletRequest request) throws Exception {
         return ApiResult.OK(postService.addLike(post, request));
+    }
+
+    // 게시글 검색
+    @GetMapping("/search")
+    public ApiResult<?> posts(@RequestBody Map<String, String> requestBody, HttpServletRequest request) throws Exception {
+        return ApiResult.OK(postService.searchPost(requestBody.get("keyword"), request));
     }
 }
