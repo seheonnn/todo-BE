@@ -5,6 +5,7 @@ import com.example.todo.entities.PostEntity;
 import com.example.todo.response.ApiResult;
 import com.example.todo.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +22,8 @@ public class PostController {
 
     // 내 게시글 모두 조회
     @GetMapping(path = "")
-    public ApiResult<?> posts(HttpServletRequest request) throws Exception {
-        List<PostEntity> postsById = postService.findAllByUserId(request);
+    public ApiResult<?> posts(HttpServletRequest request, Pageable pageable) throws Exception {
+        List<PostEntity> postsById = postService.findAllByUserId(request, pageable);
         if(postsById.size() == 0)
             return ApiResult.ERROR("작성된 글이 없습니다.", HttpStatus.BAD_REQUEST);
         return ApiResult.OK(postsById);
@@ -47,8 +48,8 @@ public class PostController {
 
     // 게시글 삭제
     @PostMapping(path = "/deleteAll")
-    public ApiResult<?> deleteAll(HttpServletRequest request) throws Exception {
-        List<PostEntity> postsById = postService.findAllByUserId(request);
+    public ApiResult<?> deleteAll(HttpServletRequest request, Pageable pageable) throws Exception {
+        List<PostEntity> postsById = postService.findAllByUserId(request, pageable);
         for (PostEntity postEntity : postsById) {
             postService.delete(postEntity.getPostIdx());
         }

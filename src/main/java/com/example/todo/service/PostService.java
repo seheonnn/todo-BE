@@ -11,10 +11,10 @@ import com.example.todo.repository.PostRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -37,9 +37,9 @@ public class PostService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public List<PostEntity> findAllByUserId(HttpServletRequest request) throws Exception {
+    public List<PostEntity> findAllByUserId(HttpServletRequest request, Pageable pageable) throws Exception {
         String email = jwtTokenProvider.getCurrentUser(request);
-        return postRepository.findAllByEmail(email);
+        return postRepository.findAllByEmail(email, pageable);
     }
 
     @Transactional
