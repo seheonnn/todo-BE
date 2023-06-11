@@ -47,6 +47,10 @@ public class LoginService {
 
 
     public UserEntity join(UserDTO user) throws Exception {
+        if (!user.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$"))
+            throw new Exception("이메일 형식이 맞지 않습니다.");
+//        if (!user.getPassword().matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%*^&+=]).{8,}$"))
+//            throw new Exception("숫자, 영문자, 특수문자가 모두 포함된 8자리 이상의 비밀번호로 설정해 주세요.");
         Optional<UserEntity> userEntityOptional = userRepository.findByEmail(user.getEmail());
         if(userEntityOptional.isPresent()){
             UserEntity userEntity = userEntityOptional.get();
