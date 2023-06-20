@@ -74,7 +74,6 @@ public class LoginService {
                 .status('A')
                 .role(String.valueOf(RoleType.USER))
                 .login_cnt(0L)
-                .created_at(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
         return userRepository.saveAndFlush(newUser);
     }
