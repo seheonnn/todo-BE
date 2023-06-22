@@ -48,7 +48,7 @@ public class LoginController {
     }
 
     // Access 토큰 재발급 api
-    @GetMapping("/accesstoken")
+    @PostMapping("/accesstoken")
     public String getNewAccessToken(@RequestBody String email, HttpServletRequest request) throws Exception {
         return loginService.getNewAccessToken(email, request);
     }
