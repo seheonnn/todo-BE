@@ -11,7 +11,9 @@ import com.example.todo.repository.PostRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class PostService {
 
     public List<PostEntity> findAllByUserId(HttpServletRequest request, Pageable pageable) throws Exception {
         String email = jwtTokenProvider.getCurrentUser(request);
-        return postRepository.findAllByEmail(email, pageable);
+        return postRepository.findAllByEmail(email, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "postIdx")));
     }
 
     @Transactional
