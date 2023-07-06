@@ -49,7 +49,7 @@ public class LoginController {
 
     // Access 토큰 재발급 api
     @PostMapping("/accesstoken")
-    public String getNewAccessToken(@RequestBody String email, HttpServletRequest request) throws Exception {
-        return loginService.getNewAccessToken(email, request);
+    public String getNewAccessToken(@RequestBody UserDTO user, HttpServletRequest request) throws Exception {
+        return loginService.getNewAccessToken(user.getEmail(), request);
     }
 }
