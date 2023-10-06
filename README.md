@@ -25,21 +25,20 @@ Back-End : <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-fl
 
 | Swagger 적용 화면 |
 | ------------------ |
-| <img width="700" alt="1" src="https://github.com/seheonnn/todo-BE/assets/101795921/67ecffeb-8262-47b4-9c53-f4ffeb45d518"> |
+| <img width="700" alt="1" src="https://github.com/seheonnn/todo-BE/assets/101795921/24af3e43-95b6-4ebd-a5b9-b1a6572a3e71"> |
 
 | Refresh & Access token 발급 |
 | ------------ |
-| <img width="700" alt="2" src="https://github.com/seheonnn/todo-BE/assets/101795921/c00e3faa-f99f-4841-81fa-feb3ebef781a"> |
+| <img width="700" alt="2" src="https://github.com/seheonnn/todo-BE/assets/101795921/6efe1b93-a10e-404a-903a-e8b0c1684026"> |
 
 | Redis를 이용한 JWT token 관리|
 | ----------- |
-|<img width="700" alt="3" src="https://github.com/seheonnn/todo-BE/assets/101795921/5d58f335-8dee-4e0e-85bb-685ea3f45071"> |
+|<img width="700" alt="3" src="https://github.com/seheonnn/todo-BE/assets/101795921/61aa6f5f-2712-40cf-a085-2a761162cf0d"> |
 | 로그인 상태의 토큰은 "이메일:토큰" 형태로, 로그아웃 상태의 토큰은 "토큰:logout" 형태로 Redis에 저장하여 관리 |
 
 | 이메일 인증 | ERD |
 | ------------ | ------------ |
-| <img width="700" alt="4" src="https://github.com/seheonnn/todo-BE/assets/101795921/d314d68f-cc1b-49bd-8222-1570b8ec0686"> | <img width="700" alt="5" src="https://github.com/seheonnn/todo-BE/assets/101795921/92102931-a125-4ed0-b557-b3241eddc02b"> |
-
+| <img width="700" alt="4" src="https://github.com/seheonnn/todo-BE/assets/101795921/8551a6ce-8164-4d0c-ab14-4d4e1011c441"> | <img width="700" alt="5" src="https://github.com/seheonnn/todo-BE/assets/101795921/2af40a2a-a094-4b20-914a-c6b28aa6482c"> |
 
 |    Type     | Description  |
 |:-----------:|---|
